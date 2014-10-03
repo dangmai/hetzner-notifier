@@ -48,7 +48,7 @@ var transporter = nodemailer.createTransport({
 request.post(url, {form: formData}, function (error, response, body) {
   if (error || response.statusCode !== 200) {
     console.error("Error getting Hetzner webpage: " + body);
-    return;
+    process.exit(2);
   }
   var lowestPrice = $(body).find(".order_price").eq(2).text().split(" ")[0];
   if (Number(lowestPrice) <= config.threshold) {
@@ -61,6 +61,7 @@ request.post(url, {form: formData}, function (error, response, body) {
     transporter.sendMail(mailOptions, function(error, info){
       if(error){
           console.error("Error sending email notification: " + err);
+          process.exit(3);
       }else{
           console.log('Email notification sent: ' + info.response);
       }
