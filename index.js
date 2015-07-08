@@ -12,6 +12,7 @@ var config = rc("hetzner-notifier", {
     smtp_port: 25,
     smtp_username: "",
     smtp_password: "",
+    smtp_accept_unauthorized: false,
     email_from: "hetzner@me.com",
     email_to: "",
     threshold: 30
@@ -42,6 +43,9 @@ var transporter = nodemailer.createTransport({
     auth: {
         user: config.smtp_username,
         pass: config.smtp_password
+    },
+    tls: {
+        rejectUnauthorized: !config.smtp_accept_unauthorized
     }
 });
 
@@ -50,7 +54,7 @@ request.post(url, {form: formData}, function (error, response, body) {
     console.error("Error getting Hetzner webpage: " + body);
     process.exit(2);
   }
-  var lowestPrice = $(body).find(".order_price").eq(2).text().split(" ")[0];
+  var lowestPrice = $(body).find(".order_price").eq(2).text().split(" ")[1];
   if (Number(lowestPrice) <= config.threshold) {
     var mailOptions = {
         from: config.email_from, // sender address
@@ -59,10 +63,10 @@ request.post(url, {form: formData}, function (error, response, body) {
         text: "Hetzner server dropped under " + config.threshold, // plaintext body
     };
     transporter.sendMail(mailOptions, function(error, info){
-      if(error){
-          console.error("Error sending email notification: " + err);
+      if (error) {
+          console.error("Error sending email notification: " + error);
           process.exit(3);
-      }else{
+      } else {
           console.log('Email notification sent: ' + info.response);
       }
     });
