@@ -28,6 +28,8 @@ will accept connection to a SMTP server with a self-signed TLS key.
 (default: `hetzner@me.com`).
 
 *Hetzner specific parameters:*
+- `country` - Optional: The country you're in.
+Hetzner charges different prices based on this information (default: US).
 - `threshold` - Optional: The price threshold (in euro) below which
 notifications are sent (default: 30).
 - `ram` - Optional: Minimum RAM (in GB).
